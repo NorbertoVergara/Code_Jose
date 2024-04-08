@@ -1,0 +1,142 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+
+function obtenerDatosDesdeGS(nombre, mostrarModal = true) {
+  var loader = document.getElementById('loader');
+  loader.style.display = 'block'; // Mostrar la animación de carga
+
+  var fechaIngresada = document.getElementById('fecha').value;
+  var fechaFormateada = formatearFecha(fechaIngresada);
+  
+  google.script.run.withSuccessHandler(function (data) {
+    loader.style.display = 'none'; // Ocultar la animación de carga
+    mostrarDatosEnModal(data, mostrarModal);
+    actualizarMarcador(nombre, data);
+    actualizarTituloModal(nombre);
+  }).obtenerDatos(nombre, fechaFormateada);
+}
+
+
+function formatearFecha(fecha) {
+  // Convertir la fecha de 'yyyy-mm-dd' a 'dd/mm/yyyy'
+  var partesFecha = fecha.split('-');
+  if (partesFecha.length === 3) {
+    return partesFecha[2] + '-' + partesFecha[1] + '-' + partesFecha[0];
+  }
+  return fecha; // Si no se puede formatear, regresar la fecha original
+}
+
+function mostrarDatosEnModal(data, mostrarModal) {
+  var datosAMostrar = '';
+
+  // Verificar si data es un objeto con la propiedad 'resultados'
+  if (typeof data === 'object' && data.hasOwnProperty('resultados')) {
+    datosAMostrar = data.resultados;
+  } else {
+    datosAMostrar = data; // Si no es un objeto esperado, mostrar el objeto directamente
+  }
+
+  var datosConSaltosDeLinea = datosAMostrar.replace(/\n/g, '<br>');
+
+  var modalBody = document.getElementById("modalBody");
+  modalBody.innerHTML = '';
+  modalBody.innerHTML = datosConSaltosDeLinea;
+
+  if (mostrarModal) {
+    $('#myModal').modal('show');
+  }
+}
+
+function actualizarMarcador(nombre, data) {
+  var marcador = document.querySelector('[data-nombre="' + nombre + '"]');
+  var riesgoEvaluado = data.evaluacionDelRiesgo;
+
+  if (marcador) {
+    marcador.classList.remove('nivel-alto', 'nivel-medio', 'nivel-bajo', 'sin-datos', 'otro-riesgo');
+
+    if (riesgoEvaluado !== "sin datos" && riesgoEvaluado !== 'Na') {
+      if (riesgoEvaluado === 'Nivel Alto') {
+        marcador.classList.add('nivel-alto');
+      } else if (riesgoEvaluado === 'Nivel Medio') {
+        marcador.classList.add('nivel-medio');
+      } else if (riesgoEvaluado === 'Nivel Bajo') {
+        marcador.classList.add('nivel-bajo');
+      } else {
+        marcador.classList.add('otro-riesgo');
+      }
+    } else {
+      marcador.classList.add('sin-datos');
+    }
+  } else {
+    console.log("No se encontró el marcador con nombre '" + nombre + "'.");
+  }
+}
+
+function actualizarTituloModal(nombre) {
+  var modalTitle = document.querySelector('.modal-title');
+  modalTitle.textContent = nombre; // Actualiza el título del modal con el nombre del elemento clicado
+}
+
+function obtenerDatosAlCargar() {
+  var elementos = [ "LÍNEA  A", "LÍNEA  B", "LÍNEA  C", "LÍNEA  D","LOGÍSTICA","OTROS PRODUCCIÓN","CALIDAD","ZONAS COMUNES","INGRESO DE CAMIONES Y/O TRACTOMULAS","MANTENIMIENTO","OFICINAS","PATIO","PTAR","TECHO ","CUARTO DE RESIDUOS","CUARTO DE CONTROL","ZONA DE GASIFICACIÓN"];
+  elementos.forEach(function (elemento) {
+    obtenerDatosDesdeGS(elemento, false);
+  });
+}
+
+document.getElementById("fecha").addEventListener("change", function() {
+  var elementos = ["LÍNEA  A", "LÍNEA  B", "LÍNEA  C", "LÍNEA  D","LOGÍSTICA","OTROS PRODUCCIÓN","CALIDAD","ZONAS COMUNES","INGRESO DE CAMIONES Y/O TRACTOMULAS","MANTENIMIENTO","OFICINAS","PATIO","PTAR","TECHO ","CUARTO DE RESIDUOS","CUARTO DE CONTROL","ZONA DE GASIFICACIÓN"];
+  elementos.forEach(function (elemento) {
+    obtenerDatosDesdeGS(elemento, false);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Mostrar automáticamente el popup al cargar la página
+    mostrarPopup();
+
+    // Configurar temporizador para cerrar automáticamente el popup después de dos segundos
+    setTimeout(function () {
+        cerrarPopup();
+    }, 4000);
+
+    // Agregar evento clic al botón para mostrar/cerrar el popup
+    var mostrarPopupButton = document.getElementById("mostrarPopup");
+    mostrarPopupButton.addEventListener("click", function () {
+        togglePopup();
+    });
+
+    // Agregar evento clic al botón para cerrar el popup
+    var cerrarPopupButton = document.getElementById("cerrarPopup");
+    cerrarPopupButton.addEventListener("click", function () {
+        cerrarPopup();
+    });
+});
+
+function mostrarPopup() {
+    var popup = document.getElementById("popupInfo");
+    popup.style.display = "block";
+}
+
+
+function cerrarPopup() {
+    var popup = document.getElementById("popupInfo");
+    popup.style.display = "none";
+}
+
+function togglePopup() {
+    var popup = document.getElementById("popupInfo");
+    if (popup.style.display === "none") {
+        mostrarPopup();
+    } else {
+        cerrarPopup();
+    }
+}
+
+
+
+
+
+</script>
