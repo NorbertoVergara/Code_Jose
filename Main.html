@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <title>Plano Comarrico</title>
+    <?!= include('CSS') ?>
+    <nav class="navbar navbar-dark">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <img src="https://comarrico.com/wp-content/uploads/2022/02/Logo-menu-comarrico.png" alt="Comarrico" width="60">
+                <h2 class="mb-0 ml-2" style="color:black;">Mapa de Riesgos Comarrico <h6> v 1.5</h6></h2>
+            </div>
+        <div class="d-flex align-items-center">
+        <div class="form-group">
+          <label for="fechaInput" class="text-black mb-2"><b>Fecha:</b></label>
+          <div class="input-group">
+            <input type="date" id="fecha" class="form-control rounded-pill">
+          </div>
+        </div>
+            <div id="loader" class="loader-container">
+              <div class="loader"></div>
+            </div>
+        </div>
+        </div>
+    </nav>
+</head>
+
+
+<body onload="obtenerDatosAlCargar()">
+<div class="container">
+    <!-- Cambia el botón de "Mostrar Información" por un icono de información -->
+<button id="mostrarPopup" onclick="mostrarPopup()">
+</button>
+
+    <div class="popup" id="popupInfo">
+        <span class="cerrar" id="cerrarPopup">&times;</span>
+        <h2>Ingresa la fecha para poder visualizar los planes de trabajo ;)</h2>
+        <p>
+            Es muy importante el ingreso de la fecha para su correcto funcionamiento.
+        </p>
+    </div>
+</div>
+
+  <main>
+    <br>
+    <div class="container informativo">
+      <div class="n text-white"><p><div class="infoV"></div> Nivel Bajo</p></div>
+      <div class="n text-white"><p><div class="infoA"></div> Nivel Medio</p></div>
+      <div class="n text-white"><p><div class="infoR"></div> Nivel Alto</p></div>
+      <div class="n text-white"><p><div class="infoN"></div> No Plan de Trabajo</p></div>
+    </div>
+    
+    <div id="image" class="container" style="background-color:; overflow-x: auto;">
+        <div class="lineaA"  title="LÍNEA  A"  data-nombre="LÍNEA  A" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="lineaB" title="LÍNEA  B" data-nombre="LÍNEA  B" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="lineaC" data-nombre="LÍNEA  C" title="LÍNEA  C" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="lineaD" data-nombre="LÍNEA  D" title="LÍNEA  D" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="logistica" data-nombre="LOGÍSTICA" title="LOGÍSTICA" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="otrosProduccion" data-nombre="OTROS PRODUCCIÓN" title="OTROS PRODUCCIÓN" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="calidad" data-nombre="CALIDAD" title="CALIDAD" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="zonasComunes" data-nombre="ZONAS COMUNES" title="ZONAS COMUNES" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="vehiculos" data-nombre="INGRESO DE CAMIONES Y/O TRACTOMULAS" title="INGRESO DE CAMIONES Y/O TRACTOMULAS" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="mantenimiento" data-nombre="MANTENIMIENTO" title="MANTENIMIENTO" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="oficinas" data-nombre="OFICINAS" title="OFICINAS" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="patio" data-nombre="PATIO" title="PATIO" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="ptar" data-nombre="PTAR" title="PTAR" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="techo" data-nombre="TECHO " title="TECHO" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="cuartoResiduos" data-nombre="CUARTO DE RESIDUOS" title="CUARTO DE RESIDUOS" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="cuartoControl" data-nombre="CUARTO DE CONTROL" title="CUARTO DE CONTROL" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+        <div class="cuartoGasificacion" data-nombre="ZONA DE GASIFICACIÓN"  title="ZONA DE GASIFICACIÓN" onclick="obtenerDatosDesdeGS(this.getAttribute('data-nombre'))"></div>
+    </div>
+  </main>
+
+  <footer class="text-center text-white footer">
+  <!-- Copyright -->
+      <div class="text-center text-black p-3">
+        <b><p>Derechos Reservados &copy; 2024 Comarrico</p></b>
+        <p><b>Jose Ochoa (Aprendiz Gestión Humana e Innovación 2023 - 2024) </b></p>
+      </div>
+  <!-- Copyright -->
+</footer>
+
+    
+<!-- Modal -->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- Encabezado del Modal -->
+            <div class="modal-header modalHeader">
+                <h4 class="modal-title text-white">Planes de Trabajo</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            
+            <!-- Cuerpo del Modal con scroll -->
+            <div class="modal-body" id="modalBody">
+                <!-- Aquí se mostrarán los datos -->
+            </div>
+            
+            <!-- Pie del Modal -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <br>
+    <?!= include('JS') ?>
+</body>
+</html>
+
+
